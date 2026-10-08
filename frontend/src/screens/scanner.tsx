@@ -5,7 +5,6 @@ const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    console.log("Scanning...");
     let stream: MediaStream | null = null;
     let stopped = false;
     let raf = 0;
@@ -25,10 +24,8 @@ const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
       await video?.play();
 
       const tick = async () => {
-        console.log("start");
         if (stopped) return;
         const codes = await detector.detect(video);
-        console.log("Detected codes:", codes);
         if (codes.length) return onScan(codes[0].rawValue);
         raf = requestAnimationFrame(tick);
       };
@@ -42,13 +39,15 @@ const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
   }, [onScan]);
 
   return (
-    <video
-      ref={videoRef}
-      playsInline
-      muted
-      autoPlay
-      style={{ width: "100%", minHeight: 240, background: "#000" }}
-    />
+    <div className="w-full h-full relative overflow-hidden">
+      <video
+        className="w-auto min-w-full min-h-full bg-black absolute z-10"
+        ref={videoRef}
+        playsInline
+        muted
+        autoPlay
+      />
+    </div>
   );
 };
 

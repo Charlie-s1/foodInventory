@@ -1,11 +1,16 @@
-import { ScanPage } from "./scanner";
+import { NavBar } from "./components/navBar";
+import { ScanPage } from "./screens/scanner";
 
 function App() {
   return (
-    <>
-      <h1 className="text-3xl font-bold">Food Inventory</h1>
-      <ScanPage />
-    </>
+    <div className="flex flex-col h-screen">
+      <div className="h-full">
+        <ScanPage />
+      </div>
+      <div className="bottom-0 left-0 w-full">
+        <NavBar />
+      </div>
+    </div>
   );
 }
 
