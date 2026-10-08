@@ -1,0 +1,14 @@
+name: foodInventory
+services:
+  app:
+    build: .
+    environment:
+      DB_PATH: /app/data/database.db
+    volumes:
+      - appdata:/app/data
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+
+volumes:
+  appdata:
