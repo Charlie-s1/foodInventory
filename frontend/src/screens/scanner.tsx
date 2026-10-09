@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { BarcodeDetector } from "barcode-detector/ponyfill";
+import { VscLoading } from "react-icons/vsc";
 
 const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let stream: MediaStream | null = null;
@@ -28,6 +30,7 @@ const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
         const codes = await detector.detect(video);
         if (codes.length) return onScan(codes[0].rawValue);
         raf = requestAnimationFrame(tick);
+        setIsLoading(false);
       };
       tick();
     })();
@@ -40,8 +43,13 @@ const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
 
   return (
     <div className="w-full h-full relative overflow-hidden">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center z-20">
+          {<VscLoading className="animate-spin text-purple-500 text-4xl" />}
+        </div>
+      )}
       <video
-        className="w-auto min-w-full min-h-full bg-black absolute z-10"
+        className="w-auto min-w-full min-h-full absolute z-10"
         ref={videoRef}
         playsInline
         muted
