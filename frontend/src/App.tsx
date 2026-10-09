@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavBar } from "./components/navBar";
-import { ScanPage } from "./screens/scanner";
+import { ScanPage } from "./screens/scanner/ScannerScreen";
 
 function App() {
   const [selectedPage, setSelectedPage] = useState<string>("Home");

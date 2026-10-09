@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { BarcodeDetector } from "barcode-detector/ponyfill";
+import { BarcodeDetector } from "barcode-detector";
+import { useRef, useState, useEffect } from "react";
 import { VscLoading } from "react-icons/vsc";
 
 const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
@@ -59,16 +59,4 @@ const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
   );
 };
 
-const ScanPage = () => {
-  const [code, setCode] = useState<string | null>(null);
-
-  return code ? (
-    <p>
-      Scanned: {code} <button onClick={() => setCode(null)}>Scan Again</button>
-    </p>
-  ) : (
-    <Scanner onScan={setCode} />
-  );
-};
-
-export { ScanPage };
+export { Scanner };
