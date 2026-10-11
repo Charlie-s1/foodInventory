@@ -3,7 +3,7 @@ export interface Product {
   product_name?: string;
   brands?: string;
   quantity?: string;
-  image_front_small_url?: string;
+  image_url?: string;
 }
 
 export interface LookupResponse {
