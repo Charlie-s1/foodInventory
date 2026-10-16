@@ -2,15 +2,6 @@ import type { FastifyInstance } from "fastify";
 import db from "../db.js";
 import { apiFetch, apiUsage } from "../apiLimiter.js";
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS product_cache (
-    barcode TEXT PRIMARY KEY,
-    found INTEGER NOT NULL,
-    data TEXT,
-    fetched_at INTEGER NOT NULL
-  );
-`);
-
 const FOUND_TTL = 30 * 24 * 3600_000; // 30 days
 const MISS_TTL = 24 * 3600_000; // 1 day
 const BACKOFF_MS = 5 * 60_000; // pause after an unexpected response
@@ -18,9 +9,9 @@ const BACKOFF_MS = 5 * 60_000; // pause after an unexpected response
 type CacheRow = { found: number; data: string | null; fetched_at: number };
 let backoffUntil = 0;
 
-const getCache = db.prepare("SELECT found, data, fetched_at FROM product_cache WHERE barcode = ?");
+const getCache = db.prepare("SELECT * FROM products WHERE barcode = ?");
 const putCache = db.prepare(
-  "INSERT OR REPLACE INTO product_cache (barcode, found, data, fetched_at) VALUES (?, ?, ?, ?)",
+  "INSERT OR REPLACE INTO products (barcode, found, data, fetched_at) VALUES (?, ?, ?, ?)",
 );
 
 function staleOrBusy(row: CacheRow | undefined, retryAfterMs: number) {

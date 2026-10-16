@@ -5,6 +5,7 @@ import { existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { productRoutes } from "./routes/products.js";
+import { itemRoutes } from "./routes/items.js";
 
 const app = Fastify({ logger: true });
 
@@ -13,6 +14,7 @@ app.get("/api/health", async () => {
 });
 app.register(userRoutes, { prefix: "/api" });
 app.register(productRoutes, { prefix: "/api" });
+app.register(itemRoutes, { prefix: "/api" });
 
 const publicDir = join(dirname(fileURLToPath(import.meta.url)), "..", "public");
 if (existsSync(publicDir)) {

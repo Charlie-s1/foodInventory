@@ -2,6 +2,7 @@ export interface Product {
   code?: string;
   product_name?: string;
   brands?: string;
+  categories?: string;
   quantity?: string;
   image_url?: string;
 }

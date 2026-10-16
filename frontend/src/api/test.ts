@@ -1,6 +1,6 @@
 export const testApi = async () => {
   try {
-    const response = await fetch("api/health");
+    const response = await fetch("/api/health");
 
     if (!response.ok) {
       throw new Error(`Health check failed with status ${response.status}`);

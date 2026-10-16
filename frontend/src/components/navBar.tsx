@@ -13,7 +13,7 @@ const NavBar = ({
       <div className="flex justify-around text-2xl">
         {[
           { icon: <BiHomeAlt />, label: "Home" },
-          { icon: <BiFridge />, label: "Fridge" },
+          { icon: <BiFridge />, label: "Pantree" },
           { icon: <BiBarcodeReader />, label: "Scan" },
           { icon: <BiBookOpen />, label: "Recipes" },
           { icon: <BiBasket />, label: "Shopping" },
@@ -21,13 +21,10 @@ const NavBar = ({
           <div
             key={index}
             className={`
-              ${
-                selectedPage === item.label
-                  ? "border-purple-500 border-b-4 flex items-center justify-center"
-                  : ""
-              } `}
+             w-full`}
           >
             <NavItem
+              isSelected={selectedPage === item.label}
               icon={item.icon}
               label={item.label}
               onClick={() => setSelectPage(item.label)}
@@ -41,16 +38,25 @@ const NavBar = ({
 
 const NavItem = ({
   icon,
+  isSelected,
+  // label,
   onClick,
 }: {
+  isSelected: boolean;
   icon: React.ReactNode;
   label?: string;
   onClick: () => void;
 }) => {
   return (
-    <button className="cursor-pointer" onClick={onClick}>
-      {icon}
-      {/* <span>{label}</span> */}
+    <button className="cursor-pointer w-full flex items-center justify-center" onClick={onClick}>
+      <div
+        className={`${
+          isSelected ? "border-purple-500 border-b-4 flex items-center justify-center" : ""
+        }`}
+      >
+        {icon}
+        {/* <span>{label}</span> */}
+      </div>
     </button>
   );
 };

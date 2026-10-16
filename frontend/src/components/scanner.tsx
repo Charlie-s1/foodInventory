@@ -2,7 +2,13 @@ import { BarcodeDetector } from "barcode-detector";
 import { useRef, useState, useEffect } from "react";
 import { VscLoading } from "react-icons/vsc";
 
-const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
+const Scanner = ({
+  onScan,
+  setIsPageLoading,
+}: {
+  onScan: (code: string) => void;
+  setIsPageLoading: (state: boolean) => void;
+}) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -10,7 +16,9 @@ const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
     let stream: MediaStream | null = null;
     let stopped = false;
     let raf = 0;
-    const detector = new BarcodeDetector({ formats: ["ean_13", "ean_8", "upc_a", "upc_e"] });
+    const detector = new BarcodeDetector({
+      formats: ["ean_13", "ean_8", "upc_a", "upc_e", "code_128"],
+    });
 
     (async () => {
       try {
@@ -31,6 +39,7 @@ const Scanner = ({ onScan }: { onScan: (code: string) => void }) => {
         if (codes.length) return onScan(codes[0].rawValue);
         raf = requestAnimationFrame(tick);
         setIsLoading(false);
+        setIsPageLoading(false);
       };
       tick();
     })();

@@ -4,15 +4,6 @@ const limit = 10;
 const windowMs = 60 * 1000; // 1 minute
 const keepMs = 24 * 3600 * 1000; // 1 day
 
-db.exec(`
-  CREATE TABLE IF NOT EXISTS api_requests (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ts INTEGER NOT NULL,
-    barcode TEXT,
-    status INTEGER
-  ); 
-  CREATE INDEX IF NOT EXISTS idx_api_requests_ts ON api_requests(ts);`);
-
 const acquire = db.transaction((barcode: string) => {
   const now = Date.now();
   const { n, oldest } = db
