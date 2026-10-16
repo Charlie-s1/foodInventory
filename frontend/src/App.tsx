@@ -7,8 +7,8 @@ function App() {
   const [selectedPage, setSelectedPage] = useState<string>("Home");
 
   return (
-    <div className="flex flex-col h-dvh">
-      <div className="h-full">
+    <div className="flex flex-col h-dvh grow-0">
+      <div className="flex-1 overflow-auto pt-safe-top pb-16">
         {selectedPage === "Scan" ? (
           <ScanPage />
         ) : selectedPage === "Pantree" ? (
@@ -17,9 +17,7 @@ function App() {
           <div />
         )}
       </div>
-      <div className="bottom-0 left-0 w-full">
-        <NavBar selectedPage={selectedPage} setSelectPage={setSelectedPage} />
-      </div>
+      <NavBar fixed={true} selectedPage={selectedPage} setSelectPage={setSelectedPage} />
     </div>
   );
 }

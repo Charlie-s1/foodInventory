@@ -4,12 +4,12 @@ import { Scanner } from "../../components/scanner";
 import { createItem, type CreateItemPayload } from "../../api/items";
 import { VscLoading } from "react-icons/vsc";
 import { MdCheckCircle } from "react-icons/md";
-// import { tmpProduct } from "../../api/tmp.food";
+import { tmpProduct } from "../../api/tmp.food";
 
 const ScanPage = () => {
-  const [isScanning, setIsScanning] = useState(true);
-  const [scannedProduct, setScannedProduct] = useState<LookupResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isScanning, setIsScanning] = useState(false);
+  const [scannedProduct, setScannedProduct] = useState<LookupResponse | null>(tmpProduct);
+  const [isLoading, setIsLoading] = useState(false);
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [itemDetails, setItemDetails] = useState<CreateItemPayload>({
     barcode: scannedProduct?.product?.code || "",

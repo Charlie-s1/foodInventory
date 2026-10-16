@@ -2,14 +2,18 @@ import type { Dispatch, SetStateAction } from "react";
 import { BiBarcodeReader, BiHomeAlt, BiFridge, BiBasket, BiBookOpen } from "react-icons/bi";
 
 const NavBar = ({
+  fixed = false,
   selectedPage,
   setSelectPage,
 }: {
+  fixed?: boolean;
   selectedPage: string;
   setSelectPage: Dispatch<SetStateAction<string>>;
 }) => {
   return (
-    <nav className="p-4">
+    <div
+      className={`p-4 bg-white/60 backdrop-blur-sm rounded-t-xl ${fixed ? "fixed bottom-0 left-0 right-0 " : ""}`}
+    >
       <div className="flex justify-around text-2xl">
         {[
           { icon: <BiHomeAlt />, label: "Home" },
@@ -32,7 +36,7 @@ const NavBar = ({
           </div>
         ))}
       </div>
-    </nav>
+    </div>
   );
 };
 
