@@ -12,14 +12,15 @@ export interface Item {
   quantity: number;
   unit?: string;
   category?: string;
+  expires_at?: string;
   expites_at?: string;
   added_at: number;
-  added_by: number;
+  added_by?: number;
 }
 
 const getItem = db.prepare("SELECT * FROM items WHERE barcode = ?");
 const insertItem = db.prepare(
-  "INSERT INTO items (barcode, name, brand, category, unit, quantity, household_id, icon, added_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  "INSERT INTO items (barcode, name, brand, category, unit, quantity, household_id, icon, expires_at, added_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 );
 const updateItem = db.prepare(
   "UPDATE items SET name = ?, category = ?, quantity = ? WHERE barcode = ?",
@@ -51,11 +52,13 @@ export async function itemRoutes(app: FastifyInstance) {
 
   // POST /items - Create a new item
   app.post<{ Body: Item }>("/addItem", async (req, reply) => {
-    const { barcode, name, brand, category, unit, quantity, household_id, icon } = req.body;
+    const { barcode, name, brand, category, unit, quantity, household_id, icon, expires_at } =
+      req.body;
 
     if (!barcode || !/^\d{8,14}$/.test(barcode)) {
       return reply.code(400).send({ error: "Valid barcode is required" });
     }
+    const expirationDate = new Date(expires_at || "");
 
     try {
       insertItem.run(
@@ -67,6 +70,7 @@ export async function itemRoutes(app: FastifyInstance) {
         quantity ?? 0,
         household_id ?? 1,
         icon ?? "",
+        expires_at ? Math.floor(expirationDate.getTime() / 1000) : null,
         Math.floor(Date.now() / 1000),
       );
       return reply.code(201).send({

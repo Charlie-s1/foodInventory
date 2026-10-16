@@ -4,12 +4,12 @@ import { Scanner } from "../../components/scanner";
 import { createItem, type CreateItemPayload } from "../../api/items";
 import { VscLoading } from "react-icons/vsc";
 import { MdCheckCircle } from "react-icons/md";
-import { tmpProduct } from "../../api/tmp.food";
+// import { tmpProduct } from "../../api/tmp.food";
 
 const ScanPage = () => {
-  const [isScanning, setIsScanning] = useState(false);
-  const [scannedProduct, setScannedProduct] = useState<LookupResponse | null>(tmpProduct);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isScanning, setIsScanning] = useState(true);
+  const [scannedProduct, setScannedProduct] = useState<LookupResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [itemDetails, setItemDetails] = useState<CreateItemPayload>({
     barcode: scannedProduct?.product?.code || "",
@@ -20,6 +20,7 @@ const ScanPage = () => {
     quantity: 1,
     icon: scannedProduct?.product?.image_url || "",
     household_id: 1,
+    expires_at: "",
   });
 
   const handleScan = useCallback(async (code: string) => {
@@ -40,6 +41,7 @@ const ScanPage = () => {
           quantity: 1,
           icon: response.product.image_url ?? "",
           household_id: 1,
+          expires_at: "",
         });
         setIsAddingItem(true);
       } else {
@@ -94,8 +96,8 @@ const ScanPage = () => {
 
   // Show item details form or success message
   return (
-    <div className="h-full flex items-center justify-center p-4">
-      <div className="rounded-2xl max-w-md w-full overflow-hidden bg-white border border-gray-200 shadow-lg">
+    <div className="h-full flex items-center justify-center">
+      <div className="rounded-2xl max-w-md w-full overflow-hidden bg-white border border-gray-200 md:shadow-lg h-[calc(100vh-80px)] overflow-y-auto">
         {scannedProduct?.found && scannedProduct.product && (
           <>
             <div className="p-6">
@@ -162,6 +164,18 @@ const ScanPage = () => {
                     value={itemDetails.category}
                     onChange={(e) => setItemDetails({ ...itemDetails, category: e.target.value })}
                     placeholder="e.g., Produce, Dairy, Pantry"
+                    className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Expiration Date
+                  </label>
+                  <input
+                    type="date"
+                    value={itemDetails.expires_at}
+                    onChange={(e) => setItemDetails({ ...itemDetails, expires_at: e.target.value })}
                     className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
                   />
                 </div>

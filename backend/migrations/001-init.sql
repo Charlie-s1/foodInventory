@@ -61,7 +61,7 @@ CREATE TABLE items (
   quantity REAL NOT NULL DEFAULT 1,
   unit TEXT,
   category TEXT,
-  expires_at TEXT,
+  expires_at INTEGER,
   added_at INTEGER NOT NULL,
   added_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
   CHECK (barcode IS NOT NULL OR name IS NOT NULL),

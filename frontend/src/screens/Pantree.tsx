@@ -76,12 +76,11 @@ interface ItemCardProps {
 
 const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
   const formatDate = (timestamp: number | string) => {
-    if (!timestamp) return "";
     const date =
       typeof timestamp === "number"
-        ? timestamp / 1000
+        ? timestamp * 1000
         : new Date(timestamp).toISOString().slice(0, 16);
-    return new Date(date).toLocaleString();
+    return new Date(date).toDateString();
   };
 
   return (
@@ -104,10 +103,10 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
             </h3>
             <span
               className={`text-xs px-2 py-1 rounded ${
-                item.expites_at ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"
+                item.expires_at ? "bg-yellow-100 text-yellow-800" : "bg-green-100 text-green-800"
               }`}
             >
-              {item.expites_at ? `Expires: ${formatDate(item.expites_at)}` : "No expiry"}
+              {item.expires_at ? `Expires: ${formatDate(item.expires_at)}` : "No expiry"}
             </span>
           </div>
 
@@ -123,23 +122,13 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
               <span className="text-gray-500">Category:</span>
               <span className="ml-1">{item.category || "N/A"}</span>
             </div>
-
-            <div>
-              <span className="text-gray-500">Barcode:</span>
-              <span className="ml-1 font-mono text-xs">{item.barcode}</span>
-            </div>
-
+            <div></div>
             <div>
               <span className="text-gray-500">Added:</span>
               <span className="ml-1 text-xs">{formatDate(item.added_at)}</span>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center text-xs text-gray-400">
-        <span>ID: {item.id}</span>
-        <span>Household: {item.household_id}</span>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ export interface Item {
   quantity: number;
   unit?: string;
   category?: string;
-  expites_at?: string;
+  expires_at?: string;
   added_at: number;
   added_by: number;
 }
@@ -23,6 +23,7 @@ export interface CreateItemPayload {
   unit?: string;
   icon?: string;
   household_id: number;
+  expires_at?: string;
 }
 
 export interface UpdateItemPayload extends Partial<CreateItemPayload> {
