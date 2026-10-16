@@ -21,7 +21,7 @@ ENV NODE_ENV=production
 COPY --from=backend-build /app/backend/package*.json ./
 COPY --from=backend-build /app/backend/node_modules ./node_modules
 COPY --from=backend-build /app/backend/dist ./dist
-COPY --from=backend-build /app/backend/migrations ./migrations
+COPY --from=backend-build /app/backend/src/migrations ./migrations
 COPY --from=frontend-build /app/frontend/dist ./public
 RUN mkdir -p /app/data && chown node:node /app/data
 USER node
