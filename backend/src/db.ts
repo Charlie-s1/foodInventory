@@ -10,7 +10,7 @@ const db = new Database(dbPath);
 db.pragma("journal_mode = WAL");
 db.pragma("foreign_keys = ON");
 
-const dir = join(dirname(fileURLToPath(import.meta.url)), "migrations");
+const dir = join(dirname(fileURLToPath(import.meta.url)), "../", "migrations");
 const files = readdirSync(dir)
   .filter((f) => /^\d+.*\.sql$/.test(f))
   .sort();
