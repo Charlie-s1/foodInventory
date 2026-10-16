@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { NavBar } from "./components/navBar";
 import { ScanPage } from "./screens/scanner/ScannerScreen";
 import { PantreePage } from "./screens/Pantree";

@@ -6,7 +6,6 @@ const PantreePage = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedBarcode, setSelectedBarcode] = useState<string>("");
 
   // Fetch items when barcode is provided
   useEffect(() => {
@@ -31,12 +30,12 @@ const PantreePage = () => {
     };
 
     fetchItems();
-  }, [selectedBarcode]);
+  }, []);
 
   // Handle barcode change - fetch for that household
-  const handleBarcodeChange = (barcode: string) => {
-    setSelectedBarcode(barcode);
-  };
+  // const handleBarcodeChange = (barcode: string) => {
+  //   setSelectedBarcode(barcode);
+  // };
 
   if (isLoading)
     return (

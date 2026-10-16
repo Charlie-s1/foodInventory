@@ -3,7 +3,7 @@ import { lookupProduct, type LookupResponse } from "../../api/products";
 import { Scanner } from "../../components/scanner";
 import { createItem, type CreateItemPayload } from "../../api/items";
 import { VscLoading } from "react-icons/vsc";
-import { MdCheckCircle, MdClose } from "react-icons/md";
+import { MdCheckCircle } from "react-icons/md";
 import { tmpProduct } from "../../api/tmp.food";
 
 const ScanPage = () => {
@@ -68,11 +68,6 @@ const ScanPage = () => {
     setScannedProduct(null);
     setIsLoading(true);
     setIsScanning(true);
-  }, []);
-
-  const handleDiscard = useCallback(() => {
-    setIsAddingItem(false);
-    setScannedProduct(null);
   }, []);
 
   if (isScanning) return <Scanner onScan={handleScan} setIsPageLoading={setIsLoading} />;
