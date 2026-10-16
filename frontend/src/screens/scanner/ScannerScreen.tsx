@@ -7,9 +7,9 @@ import { MdCheckCircle } from "react-icons/md";
 // import { tmpProduct } from "../../api/tmp.food";
 
 const ScanPage = () => {
-  const [isScanning, setIsScanning] = useState(false);
+  const [isScanning, setIsScanning] = useState(true);
   const [scannedProduct, setScannedProduct] = useState<LookupResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isAddingItem, setIsAddingItem] = useState(false);
   const [itemDetails, setItemDetails] = useState<CreateItemPayload>({
     barcode: scannedProduct?.product?.code || "",
