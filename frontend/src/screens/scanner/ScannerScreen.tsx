@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { lookupProduct, type LookupResponse } from "../../api/products";
 import { Scanner } from "../../components/scanner";
 import { createItem, type CreateItemPayload } from "../../api/items";
+import { getLocations, type Location } from "../../api/locations";
 import { VscLoading } from "react-icons/vsc";
-import { MdCheckCircle } from "react-icons/md";
 // import { tmpProduct } from "../../api/tmp.food";
 
 const ScanPage = () => {
@@ -11,6 +11,8 @@ const ScanPage = () => {
   const [scannedProduct, setScannedProduct] = useState<LookupResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAddingItem, setIsAddingItem] = useState(false);
+  const [locations, setLocations] = useState<Location[]>([]);
+
   const [itemDetails, setItemDetails] = useState<CreateItemPayload>({
     barcode: scannedProduct?.product?.code || "",
     name: scannedProduct?.product?.product_name || "",
@@ -22,6 +24,12 @@ const ScanPage = () => {
     household_id: 1,
     expires_at: "",
   });
+
+  useEffect(() => {
+    getLocations().then((loc) => {
+      setLocations(loc);
+    });
+  }, []);
 
   const handleScan = useCallback(async (code: string) => {
     setIsLoading(true);
@@ -158,6 +166,26 @@ const ScanPage = () => {
                 </div>
 
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+                  <select
+                    value={itemDetails.location_id}
+                    onChange={(e) =>
+                      setItemDetails({ ...itemDetails, location_id: +e.target.value })
+                    }
+                    disabled={!locations.length}
+                    className="w-full px-4 py-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  >
+                    <option value="">All Locations</option>
+                    {locations.map((loc) => (
+                      <option key={loc.id} value={loc.id}>
+                        {loc.name || "Unnamed"}
+                        {loc.parent_id ? ` (${loc.parent_name})` : ""}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
                   <input
                     type="text"
@@ -192,7 +220,6 @@ const ScanPage = () => {
                   className="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-200 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-green-500 flex items-center justify-center space-x-2"
                   onClick={handleAddItem}
                 >
-                  <MdCheckCircle className="text-xl" />
                   <span>Add Item</span>
                 </button>
               </div>

@@ -19,22 +19,38 @@ export interface Item {
 }
 
 const getItem = db.prepare("SELECT * FROM items WHERE barcode = ?");
+
 const insertItem = db.prepare(
-  "INSERT INTO items (barcode, name, brand, category, unit, quantity, household_id, icon, expires_at, added_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+  "INSERT INTO items (barcode, name, brand, category, unit, quantity, household_id, location_id, icon, expires_at, added_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 );
 const updateItem = db.prepare(
   "UPDATE items SET name = ?, category = ?, quantity = ? WHERE barcode = ?",
 );
 const deleteItem = db.prepare("DELETE FROM items WHERE barcode = ?");
 
+// Get all items (filtered by household)
+const getAllItems = db.prepare("SELECT * FROM items WHERE household_id = ? ORDER BY added_at DESC");
+
+// Get items for a specific location
+const getItemsByLocation = db.prepare(
+  "SELECT i.* " +
+    "FROM items i " +
+    "INNER JOIN locations l " +
+    "        ON i.location_id = l.id AND i.household_id = l.household_id " +
+    "WHERE i.household_id = ? AND i.location_id = ? " +
+    "ORDER BY i.added_at DESC",
+);
+
 export async function itemRoutes(app: FastifyInstance) {
+  const householdId = 1;
+
   // GET /items/:barcode - Retrieve a single item by barcode
   app.get<{ Params: { barcode?: string } }>("/items/:barcode?", async (req, reply) => {
     const { barcode } = req.params;
 
-    // If no barcode provided, return all items
+    // If no barcode provided, return all items for current household
     if (!barcode) {
-      const allItems = db.prepare("SELECT * FROM items ORDER BY added_at DESC").all() as Item[];
+      const allItems = getAllItems.all(householdId) as Item[];
       return reply.code(200).send(allItems);
     }
 
@@ -50,44 +66,60 @@ export async function itemRoutes(app: FastifyInstance) {
     return reply.code(200).send(item);
   });
 
-  // POST /items - Create a new item
-  app.post<{ Body: Item }>("/addItem", async (req, reply) => {
-    const { barcode, name, brand, category, unit, quantity, household_id, icon, expires_at } =
-      req.body;
-
-    if (!barcode || !/^\d{8,14}$/.test(barcode)) {
-      return reply.code(400).send({ error: "Valid barcode is required" });
-    }
-    const expirationDate = new Date(expires_at || "");
-
-    try {
-      insertItem.run(
+  // POST /items - Create a new item (with optional location)
+  app.post<{ Body: Partial<Item & { household_id?: number; location_id?: number }> }>(
+    "/addItem",
+    async (req, reply) => {
+      const {
         barcode,
-        name ?? "",
-        brand ?? "",
-        category ?? "",
-        unit ?? "",
-        quantity ?? 0,
-        household_id ?? 1,
-        icon ?? "",
-        expires_at ? Math.floor(expirationDate.getTime() / 1000) : null,
-        Math.floor(Date.now() / 1000),
-      );
-      return reply.code(201).send({
-        message: "Item created",
-        item: { barcode, name, category, unit, quantity },
-      });
-    } catch (error) {
-      // Handle duplicate entry error
-      if (
-        (error as any).code === "SQLITE_CONSTRAINT_FOREIGNKEY" ||
-        (error as any).code === "SQLITE_CONSTRAINT_UNIQUE"
-      ) {
-        return reply.code(409).send({ error: "Item already exists" });
+        name,
+        brand,
+        category,
+        unit,
+        quantity,
+        household_id,
+        icon,
+        expires_at,
+        location_id,
+      } = req.body;
+
+      if (!barcode || !/^\d{8,14}$/.test(barcode)) {
+        return reply.code(400).send({ error: "Valid barcode is required" });
       }
-      throw error;
-    }
-  });
+
+      const expirationDate = new Date(expires_at || "");
+      const now = new Date();
+
+      try {
+        insertItem.run(
+          barcode,
+          name ?? "",
+          brand ?? "",
+          category ?? "",
+          unit ?? "",
+          quantity ?? 0,
+          household_id ?? 1,
+          location_id,
+          icon ?? "",
+          expires_at ? Math.floor(expirationDate.getTime()) : null,
+          Math.floor(now.getTime()),
+        );
+        return reply.code(201).send({
+          message: "Item created",
+          item: { barcode, name, category, unit, quantity },
+        });
+      } catch (error) {
+        // Handle duplicate entry error
+        if (
+          (error as any).code === "SQLITE_CONSTRAINT_FOREIGNKEY" ||
+          (error as any).code === "SQLITE_CONSTRAINT_UNIQUE"
+        ) {
+          return reply.code(409).send({ error: "Item already exists" });
+        }
+        throw error;
+      }
+    },
+  );
 
   // PUT /items/:barcode - Update an existing item
   app.put<{ Params: { barcode: string }; Body: Partial<Item> }>(
@@ -149,4 +181,25 @@ export async function itemRoutes(app: FastifyInstance) {
       throw error;
     }
   });
+
+  // GET /items/locations/:locationId - Get items in a specific location (with nested locations)
+  app.get<{ Params: { locationId: number } }>(
+    "/items/locations/:locationId",
+    async (req, reply) => {
+      const { locationId } = req.params;
+
+      if (!locationId || isNaN(locationId)) {
+        return reply.code(400).send({ error: "Invalid location ID" });
+      }
+
+      // Get items in this specific location
+      let items = getItemsByLocation.all(1, locationId) as Item[] | null;
+
+      if (items === null || items.length === 0) {
+        return reply.code(404).send({ error: "Location not found or contains no items" });
+      }
+
+      return reply.code(200).send(items);
+    },
+  );
 }

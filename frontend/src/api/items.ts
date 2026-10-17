@@ -22,6 +22,7 @@ export interface CreateItemPayload {
   quantity: number;
   unit?: string;
   icon?: string;
+  location_id?: number;
   household_id: number;
   expires_at?: string;
 }
@@ -71,4 +72,19 @@ export async function deleteItem(barcode: string): Promise<void> {
   if (res.status === 429) throw new Error("Lookup busy");
   if (res.status === 400) throw new Error("Cannot delete item with existing relationships");
   if (!res.ok) throw new Error(`Delete item failed: ${res.status}`);
+}
+
+// Get items filtered by a specific location
+export async function getItemsByLocation(locationId: number): Promise<Item[]> {
+  const res = await fetch(`/api/items/locations/${locationId}?household=${1}`); // TODO: get household from context
+  if (res.status === 404) return [];
+  if (!res.ok) throw new Error(`Get items by location failed: ${res.status}`);
+  return res.json();
+}
+
+// Get all locations to show as filter options
+export async function getAllLocations(): Promise<any[]> {
+  const res = await fetch("/api/locations");
+  if (!res.ok) return [];
+  return res.json();
 }
