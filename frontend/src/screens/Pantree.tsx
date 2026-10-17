@@ -321,7 +321,13 @@ const ItemCard: React.FC<ItemCardProps> = ({ item }) => {
     const date = new Date(ts);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    
+    // Include year if different from current year
+    return date.toLocaleDateString(undefined, { 
+      month: "short", 
+      day: "numeric",
+      year: (date.getFullYear() !== today.getFullYear()) ? "numeric" : undefined
+    });
   };
 
   // Get badge color based on days until expiration
